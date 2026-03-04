@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>A Tiny Favor</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600&family=Inter:wght@300;400;500;600;700&family=Noto+Serif+SC:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none !important; }
+
+        body {
+            min-height: 100vh;
+            min-height: 100dvh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Inter', sans-serif;
+            background-color: #030303; 
+            color: #f3f4f6;
+            overflow: hidden;
+            position: relative;
+            padding: 20px;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* Cinematic Film Grain Overlay */
+        .noise::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            width: 100%; height: 100%;
+            background: transparent url('data:image/svg+xml,%3Csvg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"%3E%3Cfilter id="noiseFilter"%3E%3CfeTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="3" stitchTiles="stitch"/%3E%3C/filter%3E%3Crect width="100%25" height="100%25" filter="url(%23noiseFilter)" opacity="0.04"/%3E%3C/svg%3E');
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        /* Subtle, Moody Ambient Glows */
+        .glow {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(120px);
+            z-index: 0;
+            opacity: 0.25;
+            animation: breathe 15s infinite alternate cubic-bezier(0.4, 0, 0.2, 1);
+            will-change: transform, opacity;
+            transform: translateZ(0);
+        }
+        #glow1 { width: 55vw; height: 55vw; background: radial-gradient(circle, #5a4640 0%, transparent 70%); top: -10%; left: -10%; } 
+        #glow2 { width: 65vw; height: 65vw; background: radial-gradient(circle, #2a2c35 0%, transparent 70%); bottom: -20%; right: -15%; animation-delay: -7s; } 
+
+        @keyframes breathe {
+            0% { transform: scale(1) translate3d(0, 0, 0); opacity: 0.15; }
+            100% { transform: scale(1.1) translate3d(20px, -20px, 0); opacity: 0.35; }
+        }
+
+        /* Animated Background Layer */
+        .bg-layer {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 1; pointer-events: none; overflow: hidden;
+            transform: translateZ(0);
+        }
+
+        .bg-char {
+            position: absolute;
+            font-family: 'Noto Serif SC', serif;
+            color: #ffffff;
+            opacity: 0.025; 
+            animation: floatUp 25s ease-in-out infinite;
+            will-change: transform;
+        }
+
+        /* The Secret Hanzi: 你是真漂亮 */
+        .bg-secret {
+            position: absolute;
+            font-family: 'Noto Serif SC', serif;
+            color: #ffffff;
+            opacity: 0.015; 
+            font-weight: 300;
+            font-size: 8rem; 
+            white-space: nowrap;
+            filter: blur(4px);
+            animation: slowPan 45s linear infinite;
+            will-change: transform;
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.2); 
+        }
+
+        @keyframes floatUp {
+            0% { transform: translate3d(0, 110vh, 0) rotate(-10deg) scale(0.9); opacity: 0; }
+            20% { opacity: 0.025; transform: translate3d(-20px, 60vh, 0) rotate(0deg) scale(1); }
+            80% { opacity: 0.025; transform: translate3d(20px, 20vh, 0) rotate(5deg) scale(1.05); }
+            100% { transform: translate3d(0, -20vh, 0) rotate(10deg) scale(0.95); opacity: 0; }
+        }
+
+        @keyframes slowPan {
+            0% { transform: translate3d(-40vw, 80vh, 0) rotate(-10deg); opacity: 0; }
+            30% { opacity: 0.015; }
+            70% { opacity: 0.015; }
+            100% { transform: translate3d(40vw, -30vh, 0) rotate(10deg); opacity: 0; }
+        }
+
+        /* Premium Frosted Glass Card */
+        .card {
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.01));
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-top: 1px solid rgba(255, 255, 255, 0.15);
+            border-left: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            padding: 45px 35px; 
+            width: calc(100% - 30px); 
+            max-width: 440px;
+            text-align: center;
+            position: absolute;
+            top: 50%; left: 50%;
+            opacity: 0;
+            transform: translate3d(-50%, calc(-50% + 30px), 0) scale(0.95);
+            pointer-events: none;
+            /* Added a fun, satisfying spring curve here */
+            transition: opacity 0.5s ease, transform 0.7s cubic-bezier(0.34, 1.56, 0.64, 1);
+            z-index: 10;
+            will-change: transform, opacity;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.7);
+        }
+
+        /* Ambient Glowing & Floating State */
+        .card.active {
+            opacity: 1;
+            pointer-events: all;
+            transform: translate3d(-50%, -50%, 0) scale(1);
+            animation: floatAmbient 8s ease-in-out infinite alternate 0.8s;
+        }
+
+        @keyframes floatAmbient {
+            0% {
+                transform: translate3d(-50%, -50%, 0);
+                box-shadow: 0 30px 60px rgba(0, 0, 0, 0.7), inset 0 0 20px rgba(255, 255, 255, 0.01);
+            }
+            100% {
+                transform: translate3d(-50%, calc(-50% - 8px), 0);
+                box-shadow: 0 40px 80px rgba(0, 0, 0, 0.8), inset 0 0 30px rgba(255, 255, 255, 0.04); 
+            }
+        }
+
+        /* Fun, Bouncy Staggered Text Animations */
+        .card > * {
+            opacity: 0;
+            transform: translate3d(0, 20px, 0);
+            /* Matching spring curve for elements */
+            transition: opacity 0.5s ease, transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+            position: relative; 
+            z-index: 2;
+        }
+        
+        .card.active .tagline { transition-delay: 0.1s; opacity: 1; transform: translate3d(0, 0, 0); }
+        .card.active h1 { transition-delay: 0.2s; opacity: 1; transform: translate3d(0, 0, 0); }
+        .card.active p { transition-delay: 0.3s; opacity: 1; transform: translate3d(0, 0, 0); }
+        .card.active textarea { transition-delay: 0.35s; opacity: 1; transform: translate3d(0, 0, 0); }
+        .card.active .btn-stack { transition-delay: 0.4s; opacity: 1; transform: translate3d(0, 0, 0); }
+        .card.active .progress { transition-delay: 0.5s; opacity: 1; transform: translate3d(0, 0, 0); }
+
+        .tagline {
+            font-size: 10.5px;
+            text-transform: uppercase;
+            letter-spacing: 5px;
+            color: #d1bfae; 
+            font-weight: 600;
+            margin-bottom: 16px;
+            display: block;
+            text-shadow: 0 0 15px rgba(209, 191, 174, 0.2);
+        }
+
+        h1 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 30px;
+            font-weight: 600;
+            line-height: 1.15;
+            margin-bottom: 20px;
+            font-style: italic;
+            background: linear-gradient(to right, #ffffff, #e6dace, #ffffff);
+            background-size: 200% auto;
+            color: transparent;
+            -webkit-background-clip: text;
+            background-clip: text;
+            animation: shine 5s linear infinite;
+        }
+
+        @keyframes shine {
+            to { background-position: 200% center; }
+        }
+
+        p {
+            font-size: 14.5px;
+            line-height: 1.6;
+            color: #a1a1aa; 
+            margin-bottom: 35px;
+            font-weight: 300;
+        }
+
+        /* Button Stack Space */
+        .btn-stack {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            position: relative;
+        }
+
+        #dodge-zone {
+            min-height: 130px; 
+        }
+
+        .btn {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 16px 20px;
+            border-radius: 14px;
+            font-size: 14.5px;
+            font-weight: 400;
+            color: #d1d5db;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            position: relative;
+            z-index: 2;
+            font-family: 'Inter', sans-serif;
+            touch-action: manipulation;
+            user-select: none;
+            backdrop-filter: blur(10px);
+            transform: translateZ(0);
+        }
+
+        .btn:hover {
+            background: rgba(255, 255, 255, 0.06);
+            border-color: rgba(255, 255, 255, 0.25);
+            transform: translateY(-2px);
+        }
+
+        .btn:active { transform: translateY(2px) scale(0.96); }
+        
+        /* The Fun Premium Primary Button */
+        .btn.primary {
+            background: linear-gradient(135deg, #f0e6dd, #d1bfae);
+            color: #1a1512;
+            font-weight: 600;
+            border: none;
+            /* Fun inviting pulse */
+            animation: gentlePulse 3s infinite alternate;
+        }
+
+        @keyframes gentlePulse {
+            0% { box-shadow: 0 5px 15px rgba(209, 191, 174, 0.1); }
+            100% { box-shadow: 0 8px 25px rgba(209, 191, 174, 0.25); }
+        }
+
+        .btn.primary:hover {
+            transform: translateY(-3px) scale(1.02);
+        }
+
+        .btn.primary:active {
+            transform: translateY(1px) scale(0.96);
+        }
+
+        /* Subtle Roast Text */
+        .roast-text {
+            font-size: 13.5px;
+            color: #d69e9e; 
+            font-family: 'Cormorant Garamond', serif;
+            font-style: italic;
+            position: absolute;
+            bottom: -35px; 
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.4s ease;
+            text-shadow: 0 0 8px rgba(214, 158, 158, 0.2);
+            white-space: nowrap; 
+        }
+
+        /* Sleek Textarea */
+        textarea {
+            width: 100%;
+            height: 110px;
+            background: rgba(0, 0, 0, 0.2); 
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 14px;
+            padding: 16px;
+            font-size: 15px !important; 
+            color: #ffffff !important; 
+            -webkit-appearance: none; 
+            appearance: none;
+            resize: none;
+            outline: none;
+            margin-bottom: 25px;
+            font-family: 'Inter', sans-serif;
+            font-weight: 300;
+            line-height: 1.6;
+            transition: all 0.3s ease;
+            z-index: 15;
+            position: relative;
+        }
+        textarea:focus { 
+            border-color: #d1bfae; 
+            background: rgba(0, 0, 0, 0.4); 
+            box-shadow: inset 0 2px 8px rgba(0,0,0,0.3), 0 0 20px rgba(209, 191, 174, 0.15);
+            transform: translateY(-2px); /* Fun slight lift on focus */
+        }
+        textarea::placeholder { color: #6b7280; font-size: 14px; opacity: 1; }
+
+        /* Minimalist Progress Dots */
+        .progress {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 50px; 
+            position: relative;
+            z-index: 2;
+        }
+        .dot {
+            width: 6px; height: 6px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .dot.active { 
+            background: #d1bfae; 
+            transform: scale(1.6); 
+            /* Playful heartbeat for the active dot */
+            animation: dotHeartbeat 2s infinite ease-in-out;
+        }
+
+        @keyframes dotHeartbeat {
+            0% { transform: scale(1.5); box-shadow: 0 0 8px rgba(209, 191, 174, 0.3); }
+            50% { transform: scale(1.8); box-shadow: 0 0 12px rgba(209, 191, 174, 0.6); }
+            100% { transform: scale(1.5); box-shadow: 0 0 8px rgba(209, 191, 174, 0.3); }
+        }
+
+        /* Smaller phone adjustments */
+        @media (max-width: 380px) {
+            h1 { font-size: 26px; }
+            p { font-size: 14px; }
+            #dodge-zone { min-height: 145px; }
+            .roast-text { font-size: 13px; bottom: -32px; }
+            .progress { margin-top: 45px; }
+        }
+
+    </style>
+</head>
+<body class="noise">
+
+    <div class="glow" id="glow1"></div>
+    <div class="glow" id="glow2"></div>
+    
+    <div class="bg-layer" id="canvas"></div>
+
+    <div class="card active" id="c1">
+        <span class="tagline">:)</span>
+        <h1>Oh, hi. You actually clicked it.</h1>
+        <p>Okay, so... texting you out of nowhere to ask for help felt a bit too forward and maybe not super decent? So instead, I panicked and built an entire webpage to ask you a tiny favor. Please don't judge me too harshly.</p>
+        <div class="btn-stack">
+            <button class="btn primary" onclick="go(2)">I am mildly judging you, but proceed ☕</button>
+        </div>
+        <div class="progress"><div class="dot active"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+    </div>
+
+    <div class="card" id="c2">
+        <span class="tagline">The Tone Crisis</span>
+        <h1>I sound like a dying crow.</h1>
+        <p>When I try to speak Mandarin, I sound like a dying crow asking for water. But you actually sound like a normal human being. Is there a secret potion you're drinking before class, or what?</p>
+        <div class="btn-stack">
+            <button class="btn" onclick="roast('err2', 'Please, my vocal cords are begging for help.')">I just woke up like this ✨</button>
+            <button class="btn primary" onclick="go(3)">I actually practice out loud 🎤</button>
+            <div class="roast-text" id="err2"></div>
+        </div>
+        <div class="progress"><div class="dot"></div><div class="dot active"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+    </div>
+
+    <div class="card" id="c3">
+        <span class="tagline">The Hanzi Struggle</span>
+        <h1>My brain is deleting characters.</h1>
+        <p>I draw a box, add some lines, and five seconds later my memory gets completely wiped. Meanwhile, you're just casually reading. How? Is it Anki? Pleco? Pure unfiltered willpower?</p>
+        <div class="btn-stack">
+            <button class="btn primary" onclick="go(4)">Tears, trauma, and spaced repetition 📱</button>
+            <button class="btn" onclick="roast('err3', 'I tried putting the book under my pillow. It didn\'t work.')">I absorb them through osmosis 👁️</button>
+            <div class="roast-text" id="err3"></div>
+        </div>
+        <div class="progress"><div class="dot"></div><div class="dot"></div><div class="dot active"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+    </div>
+
+    <div class="card" id="c4">
+        <span class="tagline">The 'Le' (了) Mystery</span>
+        <h1>Grammar is just vibes, right?</h1>
+        <p>I just sprinkle 'le' (了) into sentences like salt and pray that Ma'am Lina doesn't notice. But you actually place things correctly. Are you secretly a native speaker in disguise?</p>
+        <div class="btn-stack">
+            <button class="btn" onclick="roast('err4', 'If I guess, I accidentally order a sofa instead of soup.')">I just close my eyes and guess 🎲</button>
+            <button class="btn primary" onclick="go(5)">Painful immersion and paying attention 📺</button>
+            <div class="roast-text" id="err4"></div>
+        </div>
+        <div class="progress"><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot active"></div><div class="dot"></div><div class="dot"></div></div>
+    </div>
+
+    <div class="card" id="c5">
+        <span class="tagline">The Elephant in the room</span>
+        <h1>Why did I do this?</h1>
+        <p>Look, I have the social battery of a sleepy cat. I couldn't have just walked up to you and ask like a normal person, I would've died. So, I spent my evening built this entire cinematic nonsense. Why do you think I did that?</p>
+        <div class="btn-stack" id="dodge-zone">
+            <button class="btn primary" onclick="go(6)" style="z-index: 5;">Because my Chinese is amazing (and you wanted to say hi) 💅</button>
+            <button class="btn" id="dodger" onmouseover="evade(event)" ontouchstart="evade(event)" style="position: absolute; bottom: 0; width: 100%;">Because you just really love coding  🤓</button>
+        </div>
+        <div class="progress"><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot active"></div><div class="dot"></div></div>
+    </div>
+
+    <div class="card" id="c6">
+        <span class="tagline">A Humble Request</span>
+        <h1>Save my grades, please.</h1>
+        <p>If you have any mercy for a struggling classmate, please drop your study routine, your favorite apps, or literally any advice below. I will owe you big time.</p>
+        
+        <textarea id="intel" placeholder="Spill the apps, the hacks, the secrets..."></textarea>
+        
+        <div class="btn-stack">
+            <button class="btn primary" id="sendBtn" disabled>Send the rescue package 🕊️</button>
+        </div>
+        <div class="progress"><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot active"></div></div>
+    </div>
+
+    <script>
+        // Smooth Swaying Background Hanzi + A little fun
+        const noiseChars = ['语', '学', '汉', '字', '难', '法', '书', '音', '✨', '☕', '🤍'];
+        const container = document.getElementById('canvas');
+
+        function spawnNoise() {
+            const el = document.createElement('div');
+            el.className = 'bg-char';
+            el.innerText = noiseChars[Math.floor(Math.random() * noiseChars.length)];
+            el.style.left = Math.random() * 100 + 'vw';
+            el.style.fontSize = (Math.random() * 2 + 1.5) + 'rem';
+            
+            const duration = Math.random() * 15 + 20;
+            el.style.animationDuration = duration + 's';
+            
+            container.appendChild(el);
+            setTimeout(() => el.remove(), duration * 1000);
+        }
+
+        // The Secret Compliment 
+        function spawnSecret() {
+            const el = document.createElement('div');
+            el.className = 'bg-secret';
+            el.innerText = '你是真漂亮'; 
+            el.style.top = (Math.random() * 50 + 10) + 'vh'; 
+            container.appendChild(el);
+            setTimeout(() => el.remove(), 45000);
+        }
+
+        for(let i=0; i<15; i++) {
+            setTimeout(spawnNoise, Math.random() * 5000);
+        }
+        setInterval(spawnNoise, 2500);
+        
+        setTimeout(spawnSecret, 2000);
+        setInterval(spawnSecret, 20000);
+
+        // Bouncy Cinematic Navigation
+        function go(step) {
+            document.querySelectorAll('.card').forEach(c => c.classList.remove('active'));
+            setTimeout(() => {
+                document.getElementById('c' + step).classList.add('active');
+                if(step === 6) setTimeout(() => document.getElementById('intel').focus(), 800);
+            }, 350); 
+        }
+
+        // Playful begging text
+        function roast(id, text) {
+            const el = document.getElementById(id);
+            el.innerText = text;
+            el.style.opacity = 1;
+            // Fun little text shake on click
+            el.style.transform = "translateX(-50%) scale(1.05)";
+            setTimeout(() => { 
+                el.style.opacity = 0; 
+                el.style.transform = "translateX(-50%) scale(1)";
+            }, 2500);
+        }
+
+        // The Dodging Button - Playful but stable
+        const dodger = document.getElementById('dodger');
+        function evade(e) {
+            if(e) e.preventDefault(); 
+            const x = (Math.random() - 0.5) * 160; 
+            const y = (Math.random() - 1) * 65 - 15; 
+            const rot = (Math.random() - 0.5) * 20; 
+            
+            dodger.style.transform = `translate3d(${x}px, ${y}px, 0) rotate(${rot}deg)`;
+            dodger.style.transition = '0.3s cubic-bezier(0.34, 1.56, 0.64, 1)'; 
+        }
+
+        // Final Submission via WhatsApp
+        const input = document.getElementById('intel');
+        const sendBtn = document.getElementById('sendBtn');
+
+        input.addEventListener('input', () => {
+            if(input.value.trim().length > 0) {
+                sendBtn.removeAttribute('disabled');
+            } else {
+                sendBtn.setAttribute('disabled', 'true');
+            }
+        });
+
+        sendBtn.addEventListener('click', () => {
+            const data = input.value.trim();
+            if(!data) return;
+
+            sendBtn.innerText = "Sending SOS... 🚀";
+            sendBtn.style.transform = "scale(0.95)";
+            
+            setTimeout(() => {
+                const preMsg = encodeURIComponent(`Okay, your ridiculously over-engineered website made me laugh. Here is my study routine, please survive the class:\n\n${data}`);
+                window.location.href = `https://wa.me/923048467753?text=${preMsg}`;
+            }, 800);
+        });
+    </script>
+</body>
+</html>
