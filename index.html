@@ -514,11 +514,20 @@
             sendBtn.innerText = "Sending SOS... 🚀";
             sendBtn.style.transform = "scale(0.95)";
             
-            setTimeout(() => {
+                        setTimeout(() => {
+                // Preparing the message (kept in case the new link uses it)
                 const preMsg = encodeURIComponent(`Okay, you've put effort in asking this politely so, here is my study routine,:\n\n${data}`);
-                window.location.href = `https://wa.me/923048467753?text=${preMsg}`;
+                
+                // Redirects to the secret message link instead of WhatsApp
+                window.location.href = "https://www.secretmessage.link/secret/69c3d9e4dcbdf/";
+                
+                // Note: If you still need to pass the 'preMsg' text to that new link, 
+                // you would change the above line to look like this instead:
+                // window.location.href = `https://www.secretmessage.link/secret/69c3d9e4dcbdf/?text=${preMsg}`;
+                
             }, 800);
         });
     </script>
 </body>
 </html>
+
